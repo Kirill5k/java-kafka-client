@@ -9,8 +9,12 @@ import java.util.Properties;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION;
+import static org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -25,6 +29,15 @@ public class KafkaConfig {
     props.setProperty(BOOTSTRAP_SERVERS_CONFIG, SERVER);
     props.setProperty(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     props.setProperty(VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    return props;
+  }
+
+  public static Properties safeProducerProps() {
+    var props = defaultProducerProps();
+    props.setProperty(ENABLE_IDEMPOTENCE_CONFIG, "true");
+    props.setProperty(ACKS_CONFIG, "all");
+    props.setProperty(RETRIES_CONFIG, String.valueOf(Integer.MAX_VALUE));
+    props.setProperty(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
     return props;
   }
 

@@ -52,7 +52,7 @@ public class TwitterConsumer {
   }
 
   public void stop() {
-    log.info("stopping twitter client");
+    log.info("stopping twitter consumer");
     twitterClient.stop();;
   }
 }

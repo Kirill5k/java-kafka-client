@@ -34,6 +34,7 @@ public class KafkaMessageProducer {
   }
 
   public void stop() {
+    log.info("stopping kafka producer for topic {}", topic);
     kafkaProducer.close();
   }
 }

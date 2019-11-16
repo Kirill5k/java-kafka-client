@@ -15,12 +15,13 @@ public class AppRunner {
   @SneakyThrows
   public static void main(String[] args) {
     var twitterConsumer = new TwitterConsumer(TwitterConfig.auth(), "bitcoin");
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.defaultProducerProps(), MY_TOPIC);
+    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.safeProducerProps(), MY_TOPIC);
 
     twitterConsumer.run(kafkaProducer::send);
 
-    Thread.sleep(5000);
-    twitterConsumer.stop();
-    kafkaProducer.stop();
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      twitterConsumer.stop();
+      kafkaProducer.stop();
+    }));
   }
 }
