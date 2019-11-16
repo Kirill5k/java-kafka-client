@@ -2,7 +2,10 @@ package io.kirill.kafkaclient.configs;
 
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TwitterConfig {
 
   public static Authentication auth() {

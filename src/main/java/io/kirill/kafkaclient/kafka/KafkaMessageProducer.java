@@ -14,27 +14,27 @@ public class KafkaMessageProducer {
 
 
   private final String topic;
-  private final KafkaProducer<String, String> kafkaProducer;
+  private final KafkaProducer<String, String> producer;
 
   public KafkaMessageProducer(Properties props, String topic) {
     this.topic = topic;
-    this.kafkaProducer = new KafkaProducer<>(props);
+    this.producer = new KafkaProducer<>(props);
   }
 
   public void send(String msg) {
     log.info("sending message {}", msg);
     var record = new ProducerRecord<String, String>(topic, msg);
-    kafkaProducer.send(record, producerCallback);
+    producer.send(record, producerCallback);
   }
 
   public void send(String key, String msg) {
     log.info("sending message {} with key {}", msg, key);
     var record = new ProducerRecord<>(topic, key, msg);
-    kafkaProducer.send(record, producerCallback);
+    producer.send(record, producerCallback);
   }
 
   public void stop() {
     log.info("stopping kafka producer for topic {}", topic);
-    kafkaProducer.close();
+    producer.close();
   }
 }

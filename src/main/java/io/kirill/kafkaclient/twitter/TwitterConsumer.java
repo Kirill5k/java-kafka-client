@@ -40,7 +40,7 @@ public class TwitterConsumer {
   }
 
   @SneakyThrows
-  public void run(Consumer<String> messageConsumer) {
+  public void onMessage(Consumer<String> messageConsumer) {
     log.info("starting twitter client");
     twitterClient.connect();
     while (!twitterClient.isDone()) {
