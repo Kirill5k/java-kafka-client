@@ -22,10 +22,10 @@ public class ElasticSearchClient {
   }
 
   @SneakyThrows
-  public void send(String index, String msg) {
+  public void send(String index, String msgId, String msg) {
     try {
       log.info("sending msg {} to index {}", msg, index);
-      var req = new IndexRequest(index).source(msg, XContentType.JSON);
+      var req = new IndexRequest(index).source(msg, XContentType.JSON).id(msgId);
       var res = client.index(req, RequestOptions.DEFAULT);
       log.info("success response from elastic search {}/{}", index, res.getId());
     } catch (Exception error) {

@@ -22,7 +22,7 @@ public class AppRunner {
     var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), MY_TOPIC);
     var elasticClient = new ElasticSearchClient(ElasticConfig.HOST, ElasticConfig.credentials());
 
-    kafkaConsumer.onMessage(msg -> elasticClient.send("twitter", msg));
+    kafkaConsumer.onMessage((id, msg) -> elasticClient.send("twitter", id, msg));
     twitterConsumer.onMessage(kafkaProducer::send);
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {

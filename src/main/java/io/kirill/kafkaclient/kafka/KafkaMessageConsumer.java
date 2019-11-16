@@ -1,13 +1,14 @@
 package io.kirill.kafkaclient.kafka;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @Slf4j
 public class KafkaMessageConsumer {
@@ -19,13 +20,11 @@ public class KafkaMessageConsumer {
     this.consumer = new KafkaConsumer<>(props);
   }
 
-  public void onMessage(Consumer<String> messageConsumer) {
+  public void onMessage(BiConsumer<String, String> messageConsumer) {
     consumer.subscribe(List.of(topic));
     var thread = new Thread(() -> {
       try {
-        while (true) {
-          consumerMessage(messageConsumer);
-        }
+        consumeMessages(messageConsumer);
       } catch (WakeupException exception) {
         log.info("received shutdown signal");
       } finally {
@@ -35,12 +34,18 @@ public class KafkaMessageConsumer {
     thread.start();
   }
 
-  private void consumerMessage(Consumer<String> messageConsumer) {
-    var records = consumer.poll(Duration.ofMillis(100));
-    records.forEach(rec -> {
-      log.info("received message from part {} with key {} and offset {}: {}", rec.partition(), rec.key(), rec.offset(), rec.value());
-      messageConsumer.accept(rec.value());
-    });
+  private void consumeMessages(BiConsumer<String, String> messageConsumer) {
+    while (true) {
+      var records = consumer.poll(Duration.ofMillis(100));
+      records.forEach(rec -> {
+        log.info("received message from part {} with key {} and offset {}: {}", rec.partition(), rec.key(), rec.offset(), rec.value());
+        messageConsumer.accept(generateId(rec), rec.value());
+      });
+    }
+  }
+
+  private String generateId(ConsumerRecord<String, String> record) {
+    return String.format("%s-%s-%s", record.topic(), record.partition(), record.offset());
   }
 
   public void stop() {
