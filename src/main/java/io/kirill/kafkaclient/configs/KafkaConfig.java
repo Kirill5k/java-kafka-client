@@ -3,6 +3,7 @@ package io.kirill.kafkaclient.configs;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
@@ -38,6 +39,14 @@ public class KafkaConfig {
     props.setProperty(ACKS_CONFIG, "all");
     props.setProperty(RETRIES_CONFIG, String.valueOf(Integer.MAX_VALUE));
     props.setProperty(MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+    return props;
+  }
+
+  public static Properties highThroughputProducerProps() {
+    var props = safeProducerProps();
+    props.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+    props.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20");
+    props.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, String.valueOf(32*1024));
     return props;
   }
 

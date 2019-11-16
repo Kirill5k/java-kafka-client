@@ -15,7 +15,7 @@ public class AppRunner {
   @SneakyThrows
   public static void main(String[] args) {
     var twitterConsumer = new TwitterConsumer(TwitterConfig.auth(), "bitcoin");
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.safeProducerProps(), MY_TOPIC);
+    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), MY_TOPIC);
 
     twitterConsumer.run(kafkaProducer::send);
 
