@@ -1,5 +1,19 @@
-# Project exclude paths
-/.gradle/
-/build/
-/build/classes/java/main/
-/.idea
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+

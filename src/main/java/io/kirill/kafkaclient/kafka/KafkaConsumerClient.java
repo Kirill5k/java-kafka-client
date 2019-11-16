@@ -1,4 +1,4 @@
-package io.kirill.kafkaclient;
+package io.kirill.kafkaclient.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import static io.kirill.kafkaclient.KafkaConfig.MY_TOPIC;
-import static io.kirill.kafkaclient.KafkaConfig.defaultConsumerProps;
+import static io.kirill.kafkaclient.configs.KafkaConfig.MY_TOPIC;
+import static io.kirill.kafkaclient.configs.KafkaConfig.defaultConsumerProps;
 
 @Slf4j
 public class KafkaConsumerClient {

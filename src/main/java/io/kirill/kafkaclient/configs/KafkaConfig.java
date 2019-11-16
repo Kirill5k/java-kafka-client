@@ -1,4 +1,4 @@
-package io.kirill.kafkaclient;
+package io.kirill.kafkaclient.configs;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
