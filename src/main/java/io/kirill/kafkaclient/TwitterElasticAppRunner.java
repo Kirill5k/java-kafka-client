@@ -10,16 +10,16 @@ import io.kirill.kafkaclient.twitter.TwitterConsumer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.kirill.kafkaclient.configs.KafkaConfig.MY_TOPIC;
+import static io.kirill.kafkaclient.configs.KafkaConfig.TWEETS_TOPIC;
 
 @Slf4j
-public class AppRunner {
+public class TwitterElasticAppRunner {
 
   @SneakyThrows
   public static void main(String[] args) {
     var twitterConsumer = new TwitterConsumer(TwitterConfig.auth(), "bitcoin");
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), MY_TOPIC);
-    var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), MY_TOPIC);
+    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), TWEETS_TOPIC);
+    var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), TWEETS_TOPIC);
     var elasticClient = new ElasticSearchClient(ElasticConfig.HOST, ElasticConfig.credentials());
 
     kafkaConsumer.onMessage((id, msg) -> elasticClient.send("twitter", id, msg));

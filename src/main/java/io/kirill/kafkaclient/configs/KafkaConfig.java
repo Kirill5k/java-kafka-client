@@ -13,11 +13,14 @@ import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaConfig {
-  public static final String MY_TOPIC = "test-topic.v1";
-  public static final String MY_STREAM = "test-stream.v1";
-  public static final String GROUP_ID = "tweets";
-
   private static final String SERVER = "127.0.0.1:9092";
+  private static final String APP_ID = "app.id.1";
+
+  public static final String INPUT_TOPIC = "topic.input.v1";
+  public static final String OUTPUT_TOPIC = "topic.output.v1";
+
+  public static final String TWEETS_TOPIC = "test-topic.v1";
+  public static final String TWEETS_GROUP_ID = "tweets";
 
   public static Properties defaultProducerProps() {
     var props = new Properties();
@@ -49,7 +52,7 @@ public class KafkaConfig {
     props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, SERVER);
     props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
+    props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, TWEETS_GROUP_ID);
     props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     return props;
   }
@@ -57,7 +60,7 @@ public class KafkaConfig {
   public static Properties defaultStreamProps() {
     var props = new Properties();
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, SERVER);
-    props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, MY_STREAM);
+    props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, APP_ID);
     props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
     return props;
