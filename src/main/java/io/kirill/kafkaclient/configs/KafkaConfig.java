@@ -14,7 +14,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaConfig {
   private static final String SERVER = "127.0.0.1:9092";
-  private static final String APP_ID = "app.id.1";
+  private static final String APP_ID = "app.id.2";
 
   public static final String INPUT_TOPIC = "topic.input.v1";
   public static final String OUTPUT_TOPIC = "topic.output.v1";

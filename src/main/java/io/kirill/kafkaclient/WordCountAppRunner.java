@@ -6,11 +6,9 @@ import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.ValueMapper;
 
-import java.util.Arrays;
-import java.util.function.Function;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -25,7 +23,7 @@ public class WordCountAppRunner {
         .<String, String>from(KafkaConfig.INPUT_TOPIC)
         .transform(input -> input
           .mapValues((ValueMapper<String, String>) String::toLowerCase)
-          .flatMapValues(text -> Arrays.asList(text.split("\\W+")))
+          .flatMapValues(text -> List.of(text.split("\\W+")))
           .groupBy((key, value) -> value)
           .count()
           .mapValues(Object::toString)
@@ -45,13 +43,4 @@ public class WordCountAppRunner {
       kafkaStreamer.stop();
     }));
   }
-
-  private Function<KStream<String, String>, KStream<String, String>> wordCounter = input -> input
-      .mapValues((ValueMapper<String, String>) String::toLowerCase)
-      .flatMapValues(text -> Arrays.asList(text.split("\\W+")))
-      .groupBy((key, value) -> value)
-      .count()
-      .mapValues(Object::toString)
-      .toStream();
-
 }
