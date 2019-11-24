@@ -6,6 +6,7 @@ import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
 
 import java.util.List;
 
@@ -23,10 +24,9 @@ public class ColorPickerAppRunner {
     var colorCountsStream = KafkaMessageStreamer
         .<String, String>from(inputTopic)
         .transform(input -> input
-          .mapValues(value -> value.split(","))
-          .filter((key, value) -> List.of("blue", "red", "green").contains(value[1]))
-          .selectKey((key, value) -> value[1])
-          .groupByKey()
+          .map((key, value) -> KeyValue.pair(value.split(",")[0], value.split(",")[1]))
+          .filter((key, value) -> List.of("blue", "red", "green").contains(value))
+          .groupBy((key, value) -> value)
           .count()
           .toStream())
         .to(outputTopic, Serdes.String(), Serdes.Long())
