@@ -24,7 +24,8 @@ public class ColorPickerAppRunner {
     var colorCountsStream = KafkaMessageStreamer
         .<String, String>from(inputTopic)
         .transform(input -> input
-          .map((key, value) -> KeyValue.pair(value.split(",")[0], value.split(",")[1]))
+          .filter((key, value) -> value.contains(","))
+          .map((key, value) -> KeyValue.pair(value.split(",")[0].toLowerCase(), value.split(",")[1].toLowerCase()))
           .filter((key, value) -> List.of("blue", "red", "green").contains(value))
           .groupBy((key, value) -> value)
           .count()
