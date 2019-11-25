@@ -36,6 +36,7 @@ public class KafkaConfig {
     props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
     props.setProperty(ProducerConfig.RETRIES_CONFIG, String.valueOf(Integer.MAX_VALUE));
     props.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+    props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
     return props;
   }
 
