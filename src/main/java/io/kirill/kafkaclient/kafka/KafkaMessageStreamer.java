@@ -45,6 +45,7 @@ public class KafkaMessageStreamer<IK, IV, OK, OV> {
   }
 
   public void stop() {
+    stream.cleanUp();
     stream.close();;
   }
 }

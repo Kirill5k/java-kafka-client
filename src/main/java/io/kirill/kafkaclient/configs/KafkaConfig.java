@@ -61,6 +61,8 @@ public class KafkaConfig {
     var props = new Properties();
     props.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, SERVER);
     props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, APP_ID);
+    props.setProperty(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+    props.setProperty(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, "100");
     props.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
     props.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
     return props;
