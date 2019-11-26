@@ -1,25 +1,26 @@
 package io.kirill.kafkaclient;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static java.math.RoundingMode.CEILING;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.kirill.kafkaclient.configs.KafkaConfig;
 import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Instant;
-import java.util.List;
-import java.util.Random;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.Random;
+
+import static java.math.RoundingMode.CEILING;
+
 @Slf4j
 public class BankBalanceAppRunner {
-  private static final ObjectMapper objectMapper = new ObjectMapper() {{ disable(WRITE_DATES_AS_TIMESTAMPS); }};
+  private static final ObjectMapper objectMapper = new ObjectMapper()
+      .findAndRegisterModules()
+      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
   private static final Random rand = new Random();
   private static final List<String> users = List.of("alice", "bob", "charlie", "donald");
 
@@ -29,7 +30,7 @@ public class BankBalanceAppRunner {
     var outputTopic = "user.balance.v1";
 
     var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), inputTopic);
-    kafkaProducer.keepOnSending(BankBalanceAppRunner::randomTransactionAsJson, 250);
+    kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionAsJson, 250);
   }
 
   @SneakyThrows

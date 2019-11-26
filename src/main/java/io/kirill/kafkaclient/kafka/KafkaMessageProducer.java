@@ -1,13 +1,12 @@
 package io.kirill.kafkaclient.kafka;
 
-import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
+import java.util.function.Supplier;
 
 @Slf4j
 public class KafkaMessageProducer {
@@ -18,19 +17,21 @@ public class KafkaMessageProducer {
   private final String topic;
   private final KafkaProducer<String, String> producer;
 
+  private boolean running = true;
+
   public KafkaMessageProducer(Properties props, String topic) {
     this.topic = topic;
     this.producer = new KafkaProducer<>(props);
   }
 
-  public void keepOnSending(Supplier<String> messageSource, long delay) {
+  public void sendContinuously(Supplier<String> messageSource, long delay) {
     new Thread(() -> {
-      while (true) {
+      while (running) {
         try {
           send(messageSource.get());
           Thread.sleep(delay);
         } catch (Exception exception) {
-
+          running = false;
         }
       }
     }).start();
@@ -50,6 +51,7 @@ public class KafkaMessageProducer {
 
   public void stop() {
     log.info("stopping kafka producer for topic {}", topic);
+    running = false;
     producer.close();
   }
 }

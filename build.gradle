@@ -18,6 +18,7 @@ dependencies {
   compile 'com.twitter:hbc-core:2.2.0'
   compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.2.0'
   compile 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+  compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1'
   compileOnly 'org.projectlombok:lombok:1.18.10'
   annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
