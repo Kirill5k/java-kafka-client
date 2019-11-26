@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.kirill.kafkaclient.configs.KafkaConfig;
 import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
+import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
 import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -33,7 +35,16 @@ public class BankBalanceAppRunner {
 
     // JSON SERDE
     // Balance pojo: count: Int, balance: BigDecimal, time: Instant
+    var kafkaStreamer = KafkaMessageStreamer
+        .<String, Transaction>from(inputTopic, Serdes.String(), KafkaConfig.jsonSerde())
+        .transform(input -> input)
+        .to(outputTopic, Serdes.String(), KafkaConfig.jsonSerde())
+        .start(KafkaConfig.defaultStreamProps());
 
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      kafkaStreamer.stop();
+      kafkaProducer.stop();
+    }));
   }
 
   @SneakyThrows
