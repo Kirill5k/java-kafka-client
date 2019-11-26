@@ -35,6 +35,7 @@ public class BankBalanceAppRunner {
 
     // JSON SERDE
     // Balance pojo: count: Int, balance: BigDecimal, time: Instant
+    // start with initial and then aggregate
     var kafkaStreamer = KafkaMessageStreamer
         .<String, Transaction>from(inputTopic, Serdes.String(), KafkaConfig.jsonSerde())
         .transform(input -> input)
