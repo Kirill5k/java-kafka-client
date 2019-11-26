@@ -28,9 +28,12 @@ public class BankBalanceAppRunner {
 
     var inputTopic = "user.transactions.v1";
     var outputTopic = "user.balance.v1";
-
     var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), inputTopic);
     kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionAsJson, 250);
+
+    // JSON SERDE
+    // Balance pojo: count: Int, balance: BigDecimal, time: Instant
+
   }
 
   @SneakyThrows

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 
@@ -23,6 +24,16 @@ public class KafkaMessageStreamer<IK, IV, OK, OV> {
     streamsBuilder = new StreamsBuilder();
     input = streamsBuilder.<IK, IV>stream(inputTopic);
     output = null;
+  }
+
+  private KafkaMessageStreamer(Serde<IK> keySerde, Serde<IV> valueSerde, String inputTopic) {
+    streamsBuilder = new StreamsBuilder();
+    input = streamsBuilder.<IK, IV>stream(inputTopic, Consumed.with(keySerde, valueSerde));
+    output = null;
+  }
+
+  public static <K, V> KafkaMessageStreamer<K, V, K, V> from(String inputTopic, Serde<K> keySerde, Serde<V> valueSerde) {
+    return new KafkaMessageStreamer<>(keySerde, valueSerde, inputTopic);
   }
 
   public static <K, V> KafkaMessageStreamer<K, V, K, V> from(String inputTopic) {
