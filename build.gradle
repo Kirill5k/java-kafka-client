@@ -17,6 +17,7 @@ dependencies {
   compile 'org.slf4j:slf4j-simple:1.7.29'
   compile 'com.twitter:hbc-core:2.2.0'
   compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.2.0'
+  compile 'com.fasterxml.jackson.core:jackson-core:2.10.1'
   compileOnly 'org.projectlombok:lombok:1.18.10'
   annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
