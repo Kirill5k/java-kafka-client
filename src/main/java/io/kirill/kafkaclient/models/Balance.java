@@ -17,12 +17,13 @@ public class Balance {
   private final BigDecimal balance;
   private final Instant lastUpdateTime;
 
-  public Balance addTransaction(Transaction transaction) {
-    if (userName != null && !userName.equals(transaction.getUserName())) {
+  public Balance addTransaction(Transaction tx) {
+    if (userName != null && !userName.equals(tx.getUserName())) {
       throw new IllegalArgumentException();
     }
 
-    var newBalance = transaction.getType() == WITHDRAW ? balance.subtract(transaction.getAmount()) : balance.add(transaction.getAmount());
-    return new Balance(transaction.getUserName(), transactionsCount+1, newBalance, transaction.getTime());
+    var newBalance = tx.getType() == WITHDRAW ? balance.subtract(tx.getAmount()) : balance.add(tx.getAmount());
+    var newUpdateTime = tx.getTime().isAfter(lastUpdateTime) ? lastUpdateTime : tx.getTime();
+    return new Balance(tx.getUserName(), transactionsCount+1, newBalance, newUpdateTime);
   }
 }

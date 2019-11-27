@@ -43,13 +43,13 @@ public class BankBalanceAppRunner {
                 (key, transaction, balance) -> balance.addTransaction(transaction)
             )
             .toStream())
-        .to(outputTopic, Serdes.String(), JsonSerdes.jsonObject(Balance.class))
+        .to(outputTopicV2, Serdes.String(), JsonSerdes.jsonObject(Balance.class))
         .start(KafkaConfig.defaultStreamProps());
+
      */
 
     var kafkaStreamer = KafkaMessageStreamer
         .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
-        .transform(input -> input)
         .to(outputTopicV1, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .start(KafkaConfig.defaultStreamProps());
 
