@@ -10,14 +10,14 @@ import org.apache.kafka.common.serialization.Serializer;
 
 @Slf4j
 @NoArgsConstructor
-class JsonSerializer<T> implements Serializer<T> {
+public class JsonSerializer<T> implements Serializer<T> {
   private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules().configure(WRITE_DATES_AS_TIMESTAMPS, false);
 
 
   @Override
   public byte[] serialize(String topic, T data) {
     try {
-      return objectMapper.writeValueAsString(data).getBytes();
+      return objectMapper.writeValueAsBytes(data);
     } catch (Exception error) {
       log.error("error serializing to json {}", error.getMessage());
       throw new SerializationException("error serializing to json: " + error.getMessage());

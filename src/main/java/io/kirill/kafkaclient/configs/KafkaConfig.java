@@ -15,9 +15,6 @@ public final class KafkaConfig {
   private static final String SERVER = "127.0.0.1:9092";
   private static final String APP_ID = "app.id.2";
 
-  public static final String INPUT_TOPIC = "topic.input.v1";
-  public static final String OUTPUT_TOPIC = "topic.output.v1";
-
   public static final String TWEETS_TOPIC = "test-topic.v1";
   public static final String TWEETS_GROUP_ID = "tweets";
 

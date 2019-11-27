@@ -16,11 +16,14 @@ public class WordCountAppRunner {
 
   public static void main(String[] args) {
 
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), KafkaConfig.INPUT_TOPIC);
-    var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), KafkaConfig.OUTPUT_TOPIC);
+    var inputTopic = "topic.input.v1";
+    var outputTopic = "topic.output.v1";
+
+    var kafkaProducer = KafkaMessageProducer.to(inputTopic, KafkaConfig.highThroughputProducerProps());
+    var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), outputTopic);
 
     var kafkaStreamer = KafkaMessageStreamer
-        .<String, String>from(KafkaConfig.INPUT_TOPIC)
+        .<String, String>from(inputTopic)
         .transform(input -> input
           .mapValues((ValueMapper<String, String>) String::toLowerCase)
           .flatMapValues(text -> List.of(text.split("\\W+")))
@@ -28,7 +31,7 @@ public class WordCountAppRunner {
           .count()
           .mapValues(Object::toString)
           .toStream())
-        .to(KafkaConfig.OUTPUT_TOPIC, Serdes.String(), Serdes.String())
+        .to(outputTopic, Serdes.String(), Serdes.String())
         .start(KafkaConfig.defaultStreamProps());
 
     kafkaConsumer.onMessage((key, value) -> log.info("received msg: key - {}; value - {}", key, value));

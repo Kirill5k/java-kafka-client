@@ -18,7 +18,7 @@ public class ColorPickerAppRunner {
     var inputTopic = "user.color.v1";
     var outputTopic = "color.count.v1";
 
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), inputTopic);
+    var kafkaProducer = KafkaMessageProducer.to(inputTopic, KafkaConfig.highThroughputProducerProps());
     var kafkaConsumer = new KafkaMessageConsumer(KafkaConfig.defaultConsumerProps(), outputTopic);
 
     var colorCountsStream = KafkaMessageStreamer

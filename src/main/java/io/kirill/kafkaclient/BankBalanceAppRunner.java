@@ -2,14 +2,13 @@ package io.kirill.kafkaclient;
 
 import static java.math.RoundingMode.CEILING;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.kirill.kafkaclient.configs.KafkaConfig;
 import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
 import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
 import io.kirill.kafkaclient.serdes.JsonSerdes;
+import io.kirill.kafkaclient.serdes.JsonSerializer;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -17,13 +16,11 @@ import java.util.Random;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
 
 @Slf4j
 public class BankBalanceAppRunner {
-  private static final ObjectMapper objectMapper = new ObjectMapper()
-      .findAndRegisterModules()
-      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
   private static final Random rand = new Random();
   private static final List<String> users = List.of("alice", "bob", "charlie", "donald");
 
@@ -31,7 +28,7 @@ public class BankBalanceAppRunner {
 
     var inputTopic = "user.transactions.v1";
     var outputTopic = "user.balance.v1";
-    var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), inputTopic);
+    var kafkaProducer = KafkaMessageProducer.<String, Transaction>to(inputTopic, KafkaConfig.highThroughputProducerProps(), new StringSerializer(), new JsonSerializer<>());
     kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionMessage, 250);
 
     // start with initial and then aggregate
@@ -48,9 +45,9 @@ public class BankBalanceAppRunner {
   }
 
   @SneakyThrows
-  private static KeyValue<String, String> randomTransactionMessage() {
+  private static KeyValue<String, Transaction> randomTransactionMessage() {
     var transaction = randomTransaction();
-    return KeyValue.pair(transaction.getUserName(), objectMapper.writeValueAsString(transaction));
+    return KeyValue.pair(transaction.getUserName(), transaction);
   }
 
   private static Transaction randomTransaction() {

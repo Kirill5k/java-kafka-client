@@ -8,7 +8,7 @@ import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
 
 @Slf4j
-class JsonDeserializer<T> implements Deserializer<T> {
+public class JsonDeserializer<T> implements Deserializer<T> {
   private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules().configure(WRITE_DATES_AS_TIMESTAMPS, false);
 
   private final Class<T> type;
