@@ -1,6 +1,5 @@
 package io.kirill.kafkaclient.configs;
 
-import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,6 +8,8 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.StreamsConfig;
+
+import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KafkaConfig {

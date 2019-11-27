@@ -3,6 +3,7 @@ package io.kirill.kafkaclient;
 import io.kirill.kafkaclient.configs.KafkaConfig;
 import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
+import io.kirill.kafkaclient.models.Balance;
 import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
 import io.kirill.kafkaclient.serdes.JsonSerdes;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.Materialized;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,25 +34,16 @@ public class BankBalanceAppRunner {
     var kafkaProducer = KafkaMessageProducer.<String, Transaction>to(inputTopic, KafkaConfig.highThroughputProducerProps(), new StringSerializer(), new JsonSerializer<>());
     kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionMessage, 250);
 
-    // start with the initial balance and then aggregate
-    /*
     var kafkaStreamer = KafkaMessageStreamer
-        .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
+        .from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .transform(input -> input
             .groupByKey()
             .aggregate(
                 () -> Balance.INITIAL,
-                (key, transaction, balance) -> balance.addTransaction(transaction)
-            )
-            .toStream())
+                (key, transaction, balance) -> balance.addTransaction(transaction),
+                Materialized.with(Serdes.String(), JsonSerdes.jsonObject(Balance.class))
+            ).toStream())
         .to(outputTopicV2, Serdes.String(), JsonSerdes.jsonObject(Balance.class))
-        .start(KafkaConfig.defaultStreamProps());
-
-     */
-
-    var kafkaStreamer = KafkaMessageStreamer
-        .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
-        .to(outputTopicV1, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .start(KafkaConfig.defaultStreamProps());
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {

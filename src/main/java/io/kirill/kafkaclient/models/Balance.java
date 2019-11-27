@@ -1,11 +1,12 @@
 package io.kirill.kafkaclient.models;
 
-import static io.kirill.kafkaclient.models.TransactionType.WITHDRAW;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+
+import static io.kirill.kafkaclient.models.TransactionType.WITHDRAW;
 
 @Value
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class Balance {
     }
 
     var newBalance = tx.getType() == WITHDRAW ? balance.subtract(tx.getAmount()) : balance.add(tx.getAmount());
-    var newUpdateTime = tx.getTime().isAfter(lastUpdateTime) ? lastUpdateTime : tx.getTime();
+    var newUpdateTime = tx.getTime().isAfter(lastUpdateTime) ? tx.getTime() : lastUpdateTime;
     return new Balance(tx.getUserName(), transactionsCount+1, newBalance, newUpdateTime);
   }
 }
