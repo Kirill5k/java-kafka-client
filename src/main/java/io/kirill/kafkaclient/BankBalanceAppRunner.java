@@ -1,7 +1,5 @@
 package io.kirill.kafkaclient;
 
-import static java.math.RoundingMode.CEILING;
-
 import io.kirill.kafkaclient.configs.KafkaConfig;
 import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
@@ -9,15 +7,17 @@ import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
 import io.kirill.kafkaclient.serdes.JsonSerdes;
 import io.kirill.kafkaclient.serdes.JsonSerializer;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.Random;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 public class BankBalanceAppRunner {
@@ -68,7 +68,7 @@ public class BankBalanceAppRunner {
   private static Transaction randomTransaction() {
     var user = users.get(rand.nextInt(4));
     var type = rand.nextBoolean() ? TransactionType.WITHDRAW : TransactionType.DEPOSIT;
-    var amount = BigDecimal.valueOf((rand.nextInt(100000) + 100)/100).divide(BigDecimal.valueOf(100), CEILING);
+    var amount = BigDecimal.valueOf((rand.nextDouble() * 1000)).setScale(2, RoundingMode.CEILING);
     return new Transaction(user, type, amount, Instant.now());
   }
 }
