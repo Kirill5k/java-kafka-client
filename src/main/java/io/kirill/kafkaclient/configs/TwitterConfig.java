@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TwitterConfig {
+public final class TwitterConfig {
 
   public static Authentication auth() {
     var apiToken = System.getenv("TWITTER_API_TOKEN");

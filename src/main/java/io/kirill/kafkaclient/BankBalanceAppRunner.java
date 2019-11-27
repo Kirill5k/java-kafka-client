@@ -1,5 +1,7 @@
 package io.kirill.kafkaclient;
 
+import static java.math.RoundingMode.CEILING;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.kirill.kafkaclient.configs.KafkaConfig;
@@ -7,16 +9,14 @@ import io.kirill.kafkaclient.kafka.KafkaMessageProducer;
 import io.kirill.kafkaclient.kafka.KafkaMessageStreamer;
 import io.kirill.kafkaclient.models.Transaction;
 import io.kirill.kafkaclient.models.TransactionType;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
-
+import io.kirill.kafkaclient.serdes.JsonSerdes;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
-
-import static java.math.RoundingMode.CEILING;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 
 @Slf4j
 public class BankBalanceAppRunner {
@@ -37,9 +37,9 @@ public class BankBalanceAppRunner {
     // Balance pojo: count: Int, balance: BigDecimal, time: Instant
     // start with initial and then aggregate
     var kafkaStreamer = KafkaMessageStreamer
-        .<String, Transaction>from(inputTopic, Serdes.String(), KafkaConfig.jsonSerde())
+        .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .transform(input -> input)
-        .to(outputTopic, Serdes.String(), KafkaConfig.jsonSerde())
+        .to(outputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .start(KafkaConfig.defaultStreamProps());
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
