@@ -1,11 +1,11 @@
 package io.kirill.kafkaclient.serdes;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
+
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Slf4j
 public class JsonDeserializer<T> implements Deserializer<T> {
@@ -22,7 +22,7 @@ public class JsonDeserializer<T> implements Deserializer<T> {
     try {
       return objectMapper.readValue(data, type);
     } catch (Exception error) {
-      log.error("error deserializing json to {}: {}", type.getName(), error.getMessage());
+      log.error("error deserializing json {} to {}: {}", new String(data), type.getName(), error.getMessage());
       throw new SerializationException("error deserializing json to " + type.getName());
     }
   }
