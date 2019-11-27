@@ -1,12 +1,12 @@
 package io.kirill.kafkaclient.kafka;
 
+import java.util.Properties;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-
-import java.util.Properties;
-import java.util.function.Supplier;
+import org.apache.kafka.streams.KeyValue;
 
 @Slf4j
 public class KafkaMessageProducer {
@@ -24,11 +24,12 @@ public class KafkaMessageProducer {
     this.producer = new KafkaProducer<>(props);
   }
 
-  public void sendContinuously(Supplier<String> messageSource, long delay) {
+  public void sendContinuously(Supplier<KeyValue<String, String>> messageSource, long delay) {
     new Thread(() -> {
       while (running) {
         try {
-          send(messageSource.get());
+          var pair = messageSource.get();
+          send(pair.key, pair.value);
           Thread.sleep(delay);
         } catch (Exception exception) {
           running = false;
@@ -38,13 +39,13 @@ public class KafkaMessageProducer {
   }
 
   public void send(String msg) {
-    log.info("sending message {}", msg);
+    log.info("sending {}", msg);
     var record = new ProducerRecord<String, String>(topic, msg);
     producer.send(record, producerCallback);
   }
 
   public void send(String key, String msg) {
-    log.info("sending message {} with key {}", msg, key);
+    log.info("sending {} - {}", key, msg);
     var record = new ProducerRecord<>(topic, key, msg);
     producer.send(record, producerCallback);
   }

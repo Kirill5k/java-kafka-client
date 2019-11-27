@@ -17,6 +17,7 @@ import java.util.Random;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
 
 @Slf4j
 public class BankBalanceAppRunner {
@@ -31,10 +32,8 @@ public class BankBalanceAppRunner {
     var inputTopic = "user.transactions.v1";
     var outputTopic = "user.balance.v1";
     var kafkaProducer = new KafkaMessageProducer(KafkaConfig.highThroughputProducerProps(), inputTopic);
-    kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionAsJson, 250);
+    kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionMessage, 250);
 
-    // JSON SERDE
-    // Balance pojo: count: Int, balance: BigDecimal, time: Instant
     // start with initial and then aggregate
     var kafkaStreamer = KafkaMessageStreamer
         .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
@@ -49,8 +48,9 @@ public class BankBalanceAppRunner {
   }
 
   @SneakyThrows
-  private static String randomTransactionAsJson() {
-    return objectMapper.writeValueAsString(randomTransaction());
+  private static KeyValue<String, String> randomTransactionMessage() {
+    var transaction = randomTransaction();
+    return KeyValue.pair(transaction.getUserName(), objectMapper.writeValueAsString(transaction));
   }
 
   private static Transaction randomTransaction() {
