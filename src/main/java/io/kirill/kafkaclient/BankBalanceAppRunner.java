@@ -27,15 +27,30 @@ public class BankBalanceAppRunner {
   public static void main(String[] args) {
 
     var inputTopic = "user.transactions.v1";
-    var outputTopic = "user.balance.v1";
+    var outputTopicV1 = "user.balance.v1";
+    var outputTopicV2 = "user.balance.v2";
     var kafkaProducer = KafkaMessageProducer.<String, Transaction>to(inputTopic, KafkaConfig.highThroughputProducerProps(), new StringSerializer(), new JsonSerializer<>());
     kafkaProducer.sendContinuously(BankBalanceAppRunner::randomTransactionMessage, 250);
 
-    // start with initial and then aggregate
+    // start with the initial balance and then aggregate
+    /*
+    var kafkaStreamer = KafkaMessageStreamer
+        .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
+        .transform(input -> input
+            .groupByKey()
+            .aggregate(
+                () -> Balance.INITIAL,
+                (key, transaction, balance) -> balance.addTransaction(transaction)
+            )
+            .toStream())
+        .to(outputTopic, Serdes.String(), JsonSerdes.jsonObject(Balance.class))
+        .start(KafkaConfig.defaultStreamProps());
+     */
+
     var kafkaStreamer = KafkaMessageStreamer
         .<String, Transaction>from(inputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .transform(input -> input)
-        .to(outputTopic, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
+        .to(outputTopicV1, Serdes.String(), JsonSerdes.jsonObject(Transaction.class))
         .start(KafkaConfig.defaultStreamProps());
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
